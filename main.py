@@ -47,7 +47,7 @@ def lex(code):
                 tokens.append(('STRING', token[1:-1]))  # Remove quotes
             else:
                 tokens.append(('IDENTIFIER', token))
-    print(tokens)
+    #print(tokens)
     return tokens
 
 class Parser:
@@ -89,7 +89,15 @@ class Parser:
     def parse_assignment_statement(self):
         identifier = self.consume('IDENTIFIER')[1]
         self.consume('OPERATOR', '=')
-        value = self.consume('NUMBER')[1]  # Assume the value is a number for simplicity
+        token_type, token_value = self.peek()
+        if token_type == 'NUMBER':
+            value = self.consume('NUMBER')[1]
+        elif token_type == 'STRING':
+            value = self.consume('STRING')[1]
+        elif token_type == 'IDENTIFIER':
+            value = self.consume('IDENTIFIER')[1]
+        else:
+            self.error("Expected a number or string for assignment")
         return ('ASSIGN', identifier, value)
 
     def peek(self):
