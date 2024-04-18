@@ -107,16 +107,14 @@ class Parser:
         return ('ASSIGN', identifier, value)
 
     def parse_expression(self):
-        # Placeholder for parsing expressions
-        # For now, assume simple arithmetic expressions
         expr = []
-        while self.peek()[1] not in {')', ';'}:
+        while self.current_token_idx < len(self.tokens) and self.peek()[1] not in {')', ';'}:
             token_type, token_value = self.peek()
             if token_type in {'NUMBER', 'IDENTIFIER'}:
                 expr.append(token_value)
             elif token_value in operators:
                 expr.append(token_value)
-            self.advance()  # Advance the token index here
+            self.advance()  # Advance the token index here to consume tokens
         return ' '.join(expr)
 
     def parse_block(self):
