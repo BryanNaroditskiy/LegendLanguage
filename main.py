@@ -50,6 +50,7 @@ def lex(code):
     #print(tokens)
     return tokens
 
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -58,7 +59,8 @@ class Parser:
     def parse(self):
         statements = []
         while self.current_token_idx < len(self.tokens):
-            print(f"Current token: {self.tokens[self.current_token_idx]}")
+            if self.peek() is None:
+                break
             statement = self.parse_statement()
             if statement:
                 statements.append(statement)
@@ -66,22 +68,29 @@ class Parser:
 
     def parse_statement(self):
         token_type, token_value = self.peek()
-        print(f"Current token in parse_statement: {token_type} {token_value}")
+        print(f"Current token in parse_statement: {token_type} {token_value}")  # Detailed debug output
         if token_type == 'PRINT_START':
             return self.parse_print_statement()
-        elif token_type == 'IDENTIFIER' and self.peek_ahead()[1] == '=':
+        elif token_type == 'IDENTIFIER' and self.peek_ahead() and self.peek_ahead()[1] == '=':
             return self.parse_assignment_statement()
+        elif token_type == 'KEYWORD':
+            return self.parse_keyword_statement(token_value)  # Handle keywords like if, else, etc.
         else:
-            self.error("Unexpected token")
+            self.advance()  # Move to the next token if not handled
+            return None
+
+    def parse_keyword_statement(self, keyword):
+        # Placeholder for keyword-specific parsing logic
+        self.advance()  # Advance past the keyword
+        return (keyword.upper(), [])
 
     def parse_print_statement(self):
         self.consume('PRINT_START')  # Consume the 'print|'
         values = []
         while True:
-            token_type, token_value = self.peek()
-            if token_type == 'PRINT_END':
+            if self.peek()[0] == 'PRINT_END':
                 break
-            values.append(token_value)
+            values.append(self.peek()[1])
             self.advance()
         self.consume('PRINT_END')  # Consume the '|'
         return ('PRINT', values)
@@ -89,38 +98,75 @@ class Parser:
     def parse_assignment_statement(self):
         identifier = self.consume('IDENTIFIER')[1]
         self.consume('OPERATOR', '=')
-        token_type, token_value = self.peek()
-        if token_type == 'NUMBER':
-            value = self.consume('NUMBER')[1]
-        elif token_type == 'STRING':
-            value = self.consume('STRING')[1]
-        elif token_type == 'IDENTIFIER':
-            value = self.consume('IDENTIFIER')[1]
-        else:
-            self.error("Expected a number or string for assignment")
+        value = self.parse_expression()  # Parse the full expression
         return ('ASSIGN', identifier, value)
+
+    def parse_if_statement(self):
+        self.consume('KEYWORD', 'if')  # Assuming 'if' starts the statement
+        condition = self.parse_expression()  # Parse the condition expression
+
+        # Expecting a colon or similar to mark the end of the condition
+        self.consume('OPERATOR', ':')
+
+        # Assuming the body is correctly parsed as a list of statements
+        body = self.parse_block()
+
+        # Debug outputs
+        print(f"Condition parsed: {condition}")
+        print(f"Body parsed: {body}")
+
+        if not body:  # Ensure body is not empty
+            body = []
+
+        return 'IF', condition, body
+
+    def parse_expression(self):
+        expr = []
+        while self.current_token_idx < len(self.tokens) and self.tokens[self.current_token_idx][0] not in {'COMMENT', 'KEYWORD', 'PRINT_START', 'PRINT_END'}:
+            token_type, token_value = self.peek()
+            print(f"Current token: {token_type} {token_value}")  # Debug each part of the expression
+            expr.append(token_value)
+            self.advance()
+        return ' '.join(expr)
+
+    def parse_block(self):
+        body = []
+        initial_indent = self.current_indent_level  # Placeholder for current indentation
+
+        while True:
+            # Check for end of block by dedent or explicit block end
+            if self.check_end_of_block():
+                break
+
+            statement = self.parse_statement()
+            if statement:
+                body.append(statement)
+
+        return body
 
     def peek(self):
         if self.current_token_idx < len(self.tokens):
             return self.tokens[self.current_token_idx]
         else:
-            return None, None
+            return None
 
     def peek_ahead(self):
         if self.current_token_idx + 1 < len(self.tokens):
             return self.tokens[self.current_token_idx + 1]
         else:
-            return None, None
+            return None
 
     def consume(self, expected_type, expected_value=None):
         token_type, token_value = self.tokens[self.current_token_idx]
         if token_type != expected_type or (expected_value is not None and token_value != expected_value):
             self.error(f"Expected {expected_type}{' with value ' + expected_value if expected_value else ''}, got {token_type}{' with value ' + token_value if token_value else ''}")
-        self.current_token_idx += 1
+        self.advance()
         return token_type, token_value
 
     def advance(self):
-        self.current_token_idx += 1
+        if self.current_token_idx < len(self.tokens):
+            print(f"Current token: {self.tokens[self.current_token_idx]}")
+            self.current_token_idx += 1
 
     def error(self, message):
         raise SyntaxError(message)
@@ -134,10 +180,51 @@ class CodeGenerator:
         output = []
         for statement in self.statements:
             if statement[0] == 'PRINT':
-                output.append('print(' + ', '.join(map(str, statement[1])) + ')')
+                output.append(self.handle_print(statement))
             elif statement[0] == 'ASSIGN':
-                output.append(f'{statement[1]} = {statement[2]}')
+                output.append(f"{statement[1]} = {statement[2]}")
+            elif statement[0] == 'IF':
+                output.append(self.handle_if(statement))
+            elif statement[0] == 'WHILE':
+                output.append(self.handle_while(statement))
+            elif statement[0] == 'FUNCTION_DEF':
+                output.append(self.handle_function_def(statement))
+            elif statement[0] == 'FUNCTION_CALL':
+                output.append(self.handle_function_call(statement))
+            # Add more cases as needed for other statement types
         return '\n'.join(output)
+
+    def handle_print(self, statement):
+        # Converts print statement to Python print function
+        return 'print(' + ', '.join(map(str, statement[1])) + ')'
+
+    def handle_if(self, statement):
+        if len(statement) < 3:
+            raise ValueError(f"Expected 'IF' statement to have at least 3 elements, got {len(statement)}: {statement}")
+
+        condition = statement[1]
+        body = '\n    '.join(self.generate_code(statement[2]))
+
+        return f"if {condition}:\n    {body}"
+
+    def handle_while(self, statement):
+        # Handles while loops
+        condition = statement[1]
+        body = '\n    '.join(self.generate_code(statement[2]))
+        return f"while {condition}:\n    {body}"
+
+    def handle_function_def(self, statement):
+        # Handles function definition
+        func_name = statement[1]
+        params = ', '.join(statement[2])
+        body = '\n    '.join(self.generate_code(statement[3]))
+        return f"def {func_name}({params}):\n    {body}"
+
+    def handle_function_call(self, statement):
+        # Handles function calls
+        func_name = statement[1]
+        args = ', '.join(statement[2])
+        return f"{func_name}({args})"
 
 
 def compile_legend(code):
