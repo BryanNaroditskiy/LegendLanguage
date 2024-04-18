@@ -9,7 +9,7 @@ keywords = {
     'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength'
 }
 
-operators = {'+', '-', '*', '/', '^', '%', '=', '!=', '>', '<', '>=', '<=', '&&', '||', '!', '(', ')'}
+operators = {'+', '-', '*', '**', '/', '^', '%', '=', '!=', '>', '<', '>=', '<=', '&&', '||', '!', '(', ')'}
 
 # Regular expressions
 identifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'
