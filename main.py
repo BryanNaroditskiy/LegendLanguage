@@ -51,6 +51,24 @@ def lex(code):
     return tokens
 
 
+# Todo
+# Redo parser so that it makes expressions like this (eqE (sym x) (int 2)) when it see's an expression
+# No need for if or loop statements
+# DO NOT DO FUNCTIONS FOR THE SAKE OF OUR SANITY
+# Build interpet function to interpet what was parsed
+# Make enviroments to keep track of values assigned to each one
+# Should be a terminal that when you type our legend language into it will output the result of the code
+#
+# Ex. Of how it should work:
+# parse('10/2') returns  (divE (numE 10) (numE 2))
+# exp =  (divE (numE 10) (numE 2))
+# interpret(exp) returns (numV 5)
+# program outputs '5' for input 10/2
+# Program terminal
+# >> 10/2
+# << 5
+
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -121,6 +139,8 @@ class Parser:
         return 'IF', condition, body
 
     def parse_expression(self):
+        # TODO
+        # Make this recursive so every time it sees a new operator it goes down a level and assigns the values to the right of it to this operator till it sees another operator and when it finishes it goes up a level and assigns everything to the value on the left
         expr = []
         while self.current_token_idx < len(self.tokens) and self.tokens[self.current_token_idx][0] not in {'COMMENT', 'KEYWORD', 'PRINT_START', 'PRINT_END'}:
             token_type, token_value = self.peek()
