@@ -69,13 +69,13 @@ def lex(code):
 # << 5
 class Environment:
     def __init__(self, parent=None):
-        self.variables = {}
-        self.parent = parent
+        self.variables = {}  # Variable list
+        self.parent = parent  # Parent of the variable
 
-    def define(self, name, value):
+    def define(self, name, value):  # Defines a new variable in the enviroment list to keep track of it
         self.variables[name] = value
 
-    def assign(self, name, value):
+    def assign(self, name, value):  # Assign a value to the variable in the environment
         if name in self.variables:
             self.variables[name] = value
         elif self.parent:
@@ -83,7 +83,7 @@ class Environment:
         else:
             raise NameError(f"Variable '{name}' is not defined.")
 
-    def get(self, name):
+    def get(self, name):  # Retrieve variable
         if name in self.variables:
             return self.variables[name]
         elif self.parent:
@@ -91,7 +91,7 @@ class Environment:
         else:
             raise NameError(f"Variable '{name}' is not defined.")
 
-    def __str__(self):
+    def __str__(self):  # Displays environment list as a string for debugging purposes
         env = self
         env_str = ""
         while env:
