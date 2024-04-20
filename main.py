@@ -67,7 +67,37 @@ def lex(code):
 # Program terminal
 # >> 10/2
 # << 5
+class Environment:
+    def __init__(self, parent=None):
+        self.variables = {}
+        self.parent = parent
 
+    def define(self, name, value):
+        self.variables[name] = value
+
+    def assign(self, name, value):
+        if name in self.variables:
+            self.variables[name] = value
+        elif self.parent:
+            self.parent.assign(name, value)
+        else:
+            raise NameError(f"Variable '{name}' is not defined.")
+
+    def get(self, name):
+        if name in self.variables:
+            return self.variables[name]
+        elif self.parent:
+            return self.parent.get(name)
+        else:
+            raise NameError(f"Variable '{name}' is not defined.")
+
+    def __str__(self):
+        env = self
+        env_str = ""
+        while env:
+            env_str += str(env.variables) + " -> "
+            env = env.parent
+        return env_str.rstrip(" -> ")
 
 class Parser:
     def __init__(self, tokens):
