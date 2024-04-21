@@ -212,10 +212,20 @@ class Parser:
 
     def parse(self):
         statements = []
+        current_indentation = 0  # Track the current indentation level
+
         while self.current_token:
             print(self.current_token)
             if self.current_token[0] == 'NEWLINE':
                 self.advance()  # Skip newline tokens
+            elif self.current_token[0] == 'INDENT':
+                # Increase the current indentation level
+                current_indentation += 1
+                self.advance()  # Skip the indentation token
+            elif self.current_token[0] == 'DEDENT':
+                # Decrease the current indentation level
+                current_indentation -= 1
+                return
             elif self.current_token[0] == 'IDENTIFIER':
                 statements.append(self.parse_assignment())
             elif self.current_token[0] == 'KEYWORD':
@@ -295,6 +305,7 @@ class Parser:
         self.consume('NEWLINE')
 
         # Parse true condition statements
+        print("here", self.current_token)
         true_statements = self.parse_statements()
 
         false_statements = []
@@ -314,21 +325,26 @@ class Parser:
 
     def parse_statements(self):
         statements = []
-        current_indentation = None
+        current_indentation = 0
 
         while self.current_token and self.current_token[0] != 'DEDENT':
             if self.current_token[0] == 'NEWLINE':
                 self.advance()  # Skip newline tokens
             elif self.current_token[0] == 'INDENT':
-                current_indentation = self.current_token[1]
-                self.advance()
+                # Increase the current indentation level
+                current_indentation += 1
+                self.advance()  # Skip the indentation token
             else:
-                if self.current_token[0] == 'DEDENT':
-                    break
-                if current_indentation is not None and self.current_token[1] != current_indentation:
-                    raise IndentationError("Inconsistent indentation")
+                # Parse the statement
+                statement = self.parse()
+                statements.append(statement)
 
-                statements.append(self.parse())
+        # Check if we've reached the end of the block
+        if self.current_token and self.current_token[0] == 'DEDENT':
+            # Decrease the current indentation level
+            current_indentation -= 1
+            # Return to the parse_if_statement function
+            return statements
 
         return statements
 
@@ -372,4 +388,3 @@ print(parser.current_token)
 statements = parser.parse()
 for statement in statements:
     print(statement)
-
