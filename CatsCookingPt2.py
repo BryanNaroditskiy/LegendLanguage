@@ -1,6 +1,10 @@
 import re
 # Example usage
 code = """
+2*2
+"""
+
+code2 = """
 ; Variable declarations
 speed = 10.5  ; km/h
 distance = 100  ; meters
@@ -24,27 +28,16 @@ count = 0
 while count < 5:
     print|"Count:", count|
     count += 1
-
-; Function definition
-def calculate_energy(mass, velocity):
-    return 0.5 * mass * velocity**2
-
-; Function call
-energy = calculate_energy(2, 10)
-
+    
 ; Reserved words usage
-if speed > 0 and t < 10:
+if speed > 0 && t < 10:
     print|"The object is moving."|
-elif t >= 10:
-    print|"The object has stopped."|
 else:
     print|"Invalid condition."|
 
 ; Comments
 ; This is a single-line comment
 """
-
-
 
 
 # Keywords and operators
@@ -55,8 +48,6 @@ keywords = {
     'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction', 'pressure',
     'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength', 'return'
 }
-
-
 
 
 # Define the operators mapping
@@ -123,12 +114,8 @@ def lex(code):
     return tokens
 
 
-
 tokens = lex(code)
 print(tokens)
-
-
-
 
 
 class Parser:
@@ -166,22 +153,58 @@ class Parser:
                 # Decrease the current indentation level
                 #current_indentation -= 1
                 break
-            elif self.current_token[0] == 'IDENTIFIER':
-                statements.append(self.parse_assignment())
+            # elif self.current_token[0] == 'IDENTIFIER':
+            #     statements.append(self.parse_assignment())
             elif self.current_token[0] == 'KEYWORD':
                 if self.current_token[1] == 'if':
                     statements.append(self.parse_if_statement())
                 elif self.current_token[1] == 'while':
                     statements.append(self.parse_while_loop())
                     self.advance()
-                elif self.current_token[1] == 'def':
-                    statements.append(self.parse_function_definition())
-                    self.advance()
                 elif self.current_token[1] == 'else':
                     print("reached else")
                     return statements  # Return the 'else' keyword to parse_if_statement
                 else:
                     raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
+
+            # Parse arithmatic expressions
+            elif self.current_token[0] in ['NUMBER', 'IDENTIFIER']:
+                try:
+                    left = int(self.current_token[1])
+                except:
+                    left = self.current_token[1]
+                self.advance()
+                if self.current_token[0] in operators.values():
+                    operation = self.current_token[0]
+                    self.advance()
+                    if self.current_token[0] not in operators.values():
+                        try:
+                            right = int(self.current_token[1])
+                        except:
+                            right = self.current_token[1]
+                        expression = (operation, left, right)
+
+                        # Check if next token is an operator
+                        self.advance()
+                        while self.current_token[0] in operators.values():
+                            operation = self.current_token[0]
+
+                            self.advance()
+                            if self.current_token[0] in operators.values():
+                                raise SyntaxError(f"Invalid operation {expression} {operation} {self.current_token[0]}")
+                            else:
+                                try:
+                                    operand = int(self.current_token[1])
+                                except:
+                                    operand = self.current_token[1]
+                                expression = (operation, expression, operand)
+                                self.advance()
+
+                        print(expression)
+                        statements.append(expression)
+                    else:
+                        raise SyntaxError(f'Invalid addition: {num1}+{self.current_token[1]}')
+
             elif self.current_token[0] == 'PRINT_START':
                 statements.append(self.parse_print_statement())
             elif self.current_token[0] == 'COMMENT':
@@ -239,6 +262,9 @@ class Parser:
 
         # Parse binary operations until reaching a newline or a higher precedence operator
         while self.current_token and self.current_token[1] in operators and self.current_token[1] != ':':
+            if self.current_token[0] == 'AND' or self.current_token[1] == 'OR':
+                operator = operators[self.current_token[1]]
+                print("Operator:", operator)
             operator = operators[self.current_token[1]]
             print("Operator:", operator)
             self.advance()  # Consume the operator
@@ -251,7 +277,7 @@ class Parser:
 
     def parse_simple_expression(self):
         # Parse the operand (identifier, number, or string)
-        if self.current_token[0] in ('NUMBER', 'IDENTIFIER', 'STRING'):
+        if self.current_token[0] in ('NUMBER', 'IDENTIFIER', 'STRING', 'KEYWORD'):
             expression = self.current_token[1]
             self.advance()
         else:

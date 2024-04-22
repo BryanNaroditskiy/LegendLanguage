@@ -53,8 +53,10 @@ keywords = {
     'sin', 'cos', 'tan', 'sqrt', 'random', 'lambda', 'if', 'else', 'repeat', 'time',
     'acceleration', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work', 'power',
     'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction', 'pressure',
-    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength'
+    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength', 'while'
 }
+
+
 
 
 # Define the operators mapping
@@ -81,38 +83,6 @@ token_regex = re.compile(
     f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\n)'
 )
 
-
-
-# Define the operators mapping
-operators = {
-    '+': 'ADD', '-': 'SUBTRACT', '*': 'MULTIPLY', '**': 'POWER', '/': 'DIVIDE', '^': 'XOR',
-    '%': 'MODULO', '=': 'EQUALS', '!=': 'NOT_EQUALS', '>': 'GREATER_THAN', '<': 'LESS_THAN',
-    '>=': 'GREATER_THAN_OR_EQUAL', '<=': 'LESS_THAN_OR_EQUAL', '&&': 'AND', '||': 'OR', '!': 'NOT',
-    '(': 'LEFT_PAREN', ')': 'RIGHT_PAREN', ':': 'COLON'
-}
-
-# Regular expressions for different token types
-identifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'
-number_regex = r'\d*\.\d+|\d+\.\d*|\d+'
-string_regex = r'"(?:[^"\\]|\\.)*"'
-comment_regex = r';.*'
-special_print_start = r'print\|'
-special_print_end = r'\|'
-whitespace_regex = r'\s+'
-
-# Combine all regex into one
-token_regex = re.compile(
-    f'({special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +
-    '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator
-    f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\n)'
-)
-
-# Combine all regex into one
-# token_regex = re.compile(
-#     f'({"|".join(map(re.escape, keywords))}|{special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +
-#     '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator
-#     f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\n)'
-# )
 
 # Tokenize the code
 def lex(code):
@@ -152,43 +122,10 @@ def lex(code):
         tokens.append(('NEWLINE', '\n'))  # Add a newline token after each line
     return tokens
 
-# Example usage
-# code = """
-# ; Variable declarations
-# speed = 10.5  ; km/h
-# distance = 100  ; meters
-# t = 2.5  ; seconds
-# mass = 5  ; kg
-# message = "Hello, Legend!"
-#
-# ; Conditional statements
-# if result1 > 20:
-#     print|"The speed is greater than 20 m/s."|
-# else:
-#     print|"The speed is not greater than 20 m/s."|
-# """
 
 
 tokens = lex(code)
 print(tokens)
-
-# Example usage
-# code = """
-# ; Conditional statements
-# if result1 > 20:
-#     print|"The speed is greater than 20 m/s."|
-# else:
-#     print|"The speed is not greater than 20 m/s."|
-# """
-
-# tokens = lex(code)
-# for token in tokens:
-#     print(token)
-
-# for token in tokens:
-#     print(token)
-
-
 
 
 class Parser:
@@ -224,8 +161,8 @@ class Parser:
                 self.advance()  # Skip the indentation token
             elif self.current_token[0] == 'DEDENT':
                 # Decrease the current indentation level
-                current_indentation -= 1
-                return
+                #current_indentation -= 1
+                break
             elif self.current_token[0] == 'IDENTIFIER':
                 statements.append(self.parse_assignment())
             elif self.current_token[0] == 'KEYWORD':
@@ -235,6 +172,9 @@ class Parser:
                     statements.append(self.parse_while_loop())
                 elif self.current_token[1] == 'def':
                     statements.append(self.parse_function_definition())
+                elif self.current_token[1] == 'else':
+                    print("reached else")
+                    return statements  # Return the 'else' keyword to parse_if_statement
                 else:
                     raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
             elif self.current_token[0] == 'PRINT_START':
@@ -251,7 +191,7 @@ class Parser:
                 continue
             elif self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':
                 # If the current token is an else keyword, return to parse_if_statement to handle the else branch
-                return statements
+                break
 
         return statements
 
@@ -307,6 +247,7 @@ class Parser:
         # Parse true condition statements
         print("here", self.current_token)
         true_statements = self.parse_statements()
+        print(true_statements)
 
         false_statements = []
 
@@ -328,21 +269,27 @@ class Parser:
         current_indentation = 0
 
         while self.current_token and self.current_token[0] != 'DEDENT':
+            print("statement current", self.current_token)
             if self.current_token[0] == 'NEWLINE':
                 self.advance()  # Skip newline tokens
             elif self.current_token[0] == 'INDENT':
                 # Increase the current indentation level
                 current_indentation += 1
                 self.advance()  # Skip the indentation token
+            elif self.current_token[0] == 'DEDENT':
+                break
             else:
                 # Parse the statement
+                print(self.current_token)
                 statement = self.parse()
+                print("test state", statement)
                 statements.append(statement)
 
         # Check if we've reached the end of the block
         if self.current_token and self.current_token[0] == 'DEDENT':
             # Decrease the current indentation level
             current_indentation -= 1
+            self.advance()
             # Return to the parse_if_statement function
             return statements
 
@@ -350,11 +297,53 @@ class Parser:
 
     def parse_while_loop(self):
         self.consume('KEYWORD')  # while
-        condition = self.parse_expression()
+        condition = self.parse_expression()  # Parse the loop condition
+
+        # Expecting the condition to be in a specific format from parse_expression
+        # Assuming parse_expression returns something like ('LESS_THAN', 'count', '5')
+        if not isinstance(condition, tuple) or len(condition) != 3:
+            raise SyntaxError("Invalid loop condition format")
+
         self.consume('COLON')
         self.consume('NEWLINE')
-        loop_statements = self.parse()
-        return ('WHILE_LOOP', condition, loop_statements)
+        self.advance()  # Advance past NEWLINE to the body of the loop
+
+        # Move into the loop body, assuming it starts with an INDENT
+        loop_statements = []
+        if self.current_token[0] == 'INDENT':
+            self.advance()  # Consume INDENT
+            while self.current_token and self.current_token[0] != 'DEDENT':
+                statement = self.parse_statement()
+                loop_statements.append(statement)
+                if self.current_token[0] == 'NEWLINE':
+                    self.advance()  # Consume any trailing NEWLINEs
+            self.advance()  # Consume DEDENT at the end of the loop body
+
+        # Format the condition for structured output
+        structured_condition = (condition[0] + '_EXPRESSION', condition[1], condition[2])
+
+        structured_while_statement = ('WHILE_STATEMENT', structured_condition, loop_statements)
+        print(structured_while_statement)
+        return structured_while_statement
+
+    def parse_statement(self):
+        # Simple parser for a print statement, just as an example
+        if self.current_token[1].startswith('print'):
+            self.consume('PRINT')
+            content = self.get_print_content(self.current_token[1])
+            return ('PRINT', content)
+        # Add more parsing logic as needed for other types of statements
+
+    def parse_expression(self):
+        # Mock-up function, needs real implementation
+        # Parses expressions like 'count < 5' and returns a tuple (variable, operator, value)
+        var = self.current_token[1]  # variable name
+        self.consume('IDENTIFIER')
+        op = self.current_token[1]  # operator, e.g., '<'
+        self.consume('OPERATOR')
+        value = self.current_token[1]  # value or variable
+        self.consume('NUMBER' if value.isdigit() else 'IDENTIFIER')
+        return (var, op, value)
 
     def parse_function_definition(self):
         self.consume('KEYWORD')  # def
@@ -383,8 +372,13 @@ class Parser:
 
 
 # Example usage
+
+
 parser = Parser(lex(code))
 print(parser.current_token)
 statements = parser.parse()
+
+
+print("End of Run")
 for statement in statements:
     print(statement)
