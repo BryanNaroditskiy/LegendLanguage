@@ -7,11 +7,14 @@ distance = 100  ; meters
 t = 2.5  ; seconds
 mass = 5  ; kg
 message = "Hello, Legend!"
-
+print|'message'|
+max_test = max(9, 8) 
+print|max_test|
 ; Arithmetic operations
 result1 = distance / t
+print|result1|
 result2 = speed * t
-result3 = mass * 9.8  ; gravitational constant
+result3 = mass * gravity  ; gravitational constant
 
 ; Conditional statements
 if result1 > 20:
@@ -102,7 +105,18 @@ def lex(code):
                 elif token == '|':
                     line_tokens.append(('PRINT_END', token))
                 elif token in keywords:
-                    line_tokens.append(('KEYWORD', token))
+                    if token == 'gravity':
+                        line_tokens.append(('NUMBER', '9.8'))  # Replace 'gravity' keyword with its numeric value
+                    elif token == 'max':
+                        line_tokens.append(('MAX_START', token))  # Token for start of max() function call
+                    elif token == '(':
+                        line_tokens.append(('LEFT_PAREN', token))
+                    elif token == ')':
+                        line_tokens.append(('RIGHT_PAREN', token))
+                    elif token == ',':
+                        line_tokens.append(('COMMA', token))
+                    else:
+                        line_tokens.append(('KEYWORD', token))
                 elif token in operators:
                     line_tokens.append((operators[token], token))  # Use specific token for each operator
                 elif re.match(number_regex, token):
@@ -202,6 +216,7 @@ class Parser:
             self.consume('EQUALS')  # Ensure the assignment operator is '='
 
             # Parse the expression
+            print(self.current_token)
             expression = self.parse_expression()
 
             # Consume the newline token
@@ -228,7 +243,18 @@ class Parser:
     def parse_expression(self):
         print("Parsing expression...")
 
-        # Parse the left operand
+        if self.current_token[0] == 'MAX_START':
+            self.consume('MAX_START')  # Consume 'max'
+            self.consume('LEFT_PAREN')  # Consume '('
+            print(self.current_token)
+            arguments = [self.parse_simple_expression()]  # Parse the first argument
+            print(arguments)
+            while self.current_token[0] == 'NUMBER':
+                arguments.append(self.parse_simple_expression())  # Parse additional arguments
+
+            self.consume('RIGHT_PAREN')  # Consume ')'
+            return ('MAX', arguments)  # Return tuple for max function call
+            # Parse the left operand
         left_operand = self.parse_simple_expression()
         print("Left operand:", left_operand)
 
@@ -488,6 +514,18 @@ class Interpreter:
                 loop_block = Interpreter._interpret_block(statement[2][0])
                 python_code += f"while {condition}:\n"
                 python_code += loop_block
+            elif statement[0] == 'PRINT':
+                python_code += f"print("
+                for item in statement[1]:
+                    if item[0] == 'STRING':
+                        python_code += f"'{item[1]}'"
+                    elif item[0] == 'IDENTIFIER':
+                        python_code += item[1]
+                    elif item[0] == 'NUMBER':
+                        python_code += item[1]
+                    if item != statement[1][-1]:
+                        python_code += ", "
+                python_code += ")\n"
 
         return python_code
     @staticmethod
@@ -515,6 +553,10 @@ class Interpreter:
             return f"{Interpreter._interpret_expression(expression[1])} < {Interpreter._interpret_expression(expression[2])}"
         elif expression[0] == 'AND':
             return f"{Interpreter._interpret_expression(expression[1])} and {Interpreter._interpret_expression(expression[2])}"
+        elif expression[0] == 'MAX':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return max(values)
 
     @staticmethod
     def _interpret_block(block):
