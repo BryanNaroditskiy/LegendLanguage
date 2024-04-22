@@ -1,0 +1,182 @@
+Index: CatsCooking.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import re\r\n# Example usage\r\ncode = \"\"\"\r\n; Variable declarations\r\nspeed = 10.5  ; km/h\r\ndistance = 100  ; meters\r\nt = 2.5  ; seconds\r\nmass = 5  ; kg\r\nmessage = \"Hello, Legend!\"\r\n\r\n; Arithmetic operations\r\nresult1 = distance / t\r\nresult2 = speed * t\r\nresult3 = mass * 9.8  ; gravitational constant\r\n\r\n; Conditional statements\r\nif result1 > 20:\r\n    print|\"The speed is greater than 20 m/s.\"|\r\nelse:\r\n    print|\"The speed is not greater than 20 m/s.\"|\r\n\r\n; Looping\r\ncount = 0\r\nwhile count < 5:\r\n    print|\"Count:\", count|\r\n    count += 1\r\n\r\n; Function definition\r\ndef calculate_energy|mass, velocity|:\r\n    return 0.5 * mass * velocity**2\r\n\r\n; Function call\r\nenergy = calculate_energy|2, 10|\r\n\r\n; Reserved words usage\r\nif speed > 0 and t < 10:\r\n    print|\"The object is moving.\"|\r\nelif t >= 10:\r\n    print|\"The object has stopped.\"|\r\nelse:\r\n    print|\"Invalid condition.\"|\r\n\r\n; Comments\r\n; This is a single-line comment\r\n\"\"\"\r\n\r\n\r\n\r\n\r\n# Keywords and operators\r\nkeywords = {\r\n    'true', 'false', 'avg', 'max', 'min', 'sort', 'shuffle', 'reverse', 'union', 'intersection',\r\n    'sin', 'cos', 'tan', 'sqrt', 'random', 'lambda', 'if', 'else', 'repeat', 'time',\r\n    'acceleration', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work', 'power',\r\n    'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction', 'pressure',\r\n    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength'\r\n}\r\n\r\n\r\n# Define the operators mapping\r\noperators = {\r\n    '+': 'ADD', '-': 'SUBTRACT', '*': 'MULTIPLY', '**': 'POWER', '/': 'DIVIDE', '^': 'XOR',\r\n    '%': 'MODULO', '=': 'EQUALS', '!=': 'NOT_EQUALS', '>': 'GREATER_THAN', '<': 'LESS_THAN',\r\n    '>=': 'GREATER_THAN_OR_EQUAL', '<=': 'LESS_THAN_OR_EQUAL', '&&': 'AND', '||': 'OR', '!': 'NOT',\r\n    '(': 'LEFT_PAREN', ')': 'RIGHT_PAREN', ':': 'COLON'\r\n}\r\n\r\n# Regular expressions for different token types\r\nidentifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'\r\nnumber_regex = r'\\d*\\.\\d+|\\d+\\.\\d*|\\d+'\r\nstring_regex = r'\"(?:[^\"\\\\]|\\\\.)*\"'\r\ncomment_regex = r';.*'\r\nspecial_print_start = r'print\\|'\r\nspecial_print_end = r'\\|'\r\nwhitespace_regex = r'\\s+'\r\n\r\n# Combine all regex into one\r\ntoken_regex = re.compile(\r\n    f'({special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +\r\n    '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator\r\n    f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\\\n)'\r\n)\r\n\r\n\r\n\r\n# Define the operators mapping\r\noperators = {\r\n    '+': 'ADD', '-': 'SUBTRACT', '*': 'MULTIPLY', '**': 'POWER', '/': 'DIVIDE', '^': 'XOR',\r\n    '%': 'MODULO', '=': 'EQUALS', '!=': 'NOT_EQUALS', '>': 'GREATER_THAN', '<': 'LESS_THAN',\r\n    '>=': 'GREATER_THAN_OR_EQUAL', '<=': 'LESS_THAN_OR_EQUAL', '&&': 'AND', '||': 'OR', '!': 'NOT',\r\n    '(': 'LEFT_PAREN', ')': 'RIGHT_PAREN', ':': 'COLON'\r\n}\r\n\r\n# Regular expressions for different token types\r\nidentifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'\r\nnumber_regex = r'\\d*\\.\\d+|\\d+\\.\\d*|\\d+'\r\nstring_regex = r'\"(?:[^\"\\\\]|\\\\.)*\"'\r\ncomment_regex = r';.*'\r\nspecial_print_start = r'print\\|'\r\nspecial_print_end = r'\\|'\r\nwhitespace_regex = r'\\s+'\r\n\r\n# Combine all regex into one\r\ntoken_regex = re.compile(\r\n    f'({special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +\r\n    '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator\r\n    f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\\\n)'\r\n)\r\n\r\n# Combine all regex into one\r\n# token_regex = re.compile(\r\n#     f'({\"|\".join(map(re.escape, keywords))}|{special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +\r\n#     '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator\r\n#     f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\\\n)'\r\n# )\r\n\r\n# Tokenize the code\r\ndef lex(code):\r\n    tokens = []\r\n    lines = code.split('\\n')  # Split the code into lines\r\n    current_indentation = 0\r\n    for line in lines:\r\n        line_tokens = []\r\n        # Determine the indentation level\r\n        indentation = len(line) - len(line.lstrip())\r\n        while indentation < current_indentation:\r\n            line_tokens.append(('DEDENT', current_indentation))\r\n            current_indentation -= 4\r\n        if indentation > current_indentation:\r\n            line_tokens.append(('INDENT', indentation))\r\n            current_indentation = indentation\r\n        for match in re.finditer(token_regex, line):\r\n            token = match.group().strip()\r\n            if token:\r\n                if token[0] == ';':  # Ignore comments\r\n                    break\r\n                elif token.startswith('print|'):\r\n                    line_tokens.append(('PRINT_START', token))\r\n                elif token == '|':\r\n                    line_tokens.append(('PRINT_END', token))\r\n                elif token in keywords:\r\n                    line_tokens.append(('KEYWORD', token))\r\n                elif token in operators:\r\n                    line_tokens.append((operators[token], token))  # Use specific token for each operator\r\n                elif re.match(number_regex, token):\r\n                    line_tokens.append(('NUMBER', token))\r\n                elif re.match(string_regex, token):\r\n                    line_tokens.append(('STRING', token[1:-1]))  # Remove quotes\r\n                else:\r\n                    line_tokens.append(('IDENTIFIER', token))\r\n        tokens.extend(line_tokens)\r\n        tokens.append(('NEWLINE', '\\n'))  # Add a newline token after each line\r\n    return tokens\r\n\r\n# Example usage\r\n# code = \"\"\"\r\n# ; Variable declarations\r\n# speed = 10.5  ; km/h\r\n# distance = 100  ; meters\r\n# t = 2.5  ; seconds\r\n# mass = 5  ; kg\r\n# message = \"Hello, Legend!\"\r\n#\r\n# ; Conditional statements\r\n# if result1 > 20:\r\n#     print|\"The speed is greater than 20 m/s.\"|\r\n# else:\r\n#     print|\"The speed is not greater than 20 m/s.\"|\r\n# \"\"\"\r\n\r\n\r\ntokens = lex(code)\r\nprint(tokens)\r\n\r\n# Example usage\r\n# code = \"\"\"\r\n# ; Conditional statements\r\n# if result1 > 20:\r\n#     print|\"The speed is greater than 20 m/s.\"|\r\n# else:\r\n#     print|\"The speed is not greater than 20 m/s.\"|\r\n# \"\"\"\r\n\r\n# tokens = lex(code)\r\n# for token in tokens:\r\n#     print(token)\r\n\r\n# for token in tokens:\r\n#     print(token)\r\n\r\n\r\n\r\n\r\nclass Parser:\r\n    def __init__(self, tokens):\r\n        self.tokens = tokens\r\n        self.current_token_idx = 0\r\n        self.current_token = self.tokens[self.current_token_idx]\r\n\r\n    def consume(self, token_type):\r\n        if self.current_token[0] == token_type:\r\n            self.advance()\r\n        else:\r\n            raise SyntaxError(f\"Expected {token_type}, got {self.current_token[0]}\")\r\n\r\n    def advance(self):\r\n        self.current_token_idx += 1\r\n        if self.current_token_idx < len(self.tokens):\r\n            self.current_token = self.tokens[self.current_token_idx]\r\n        else:\r\n            self.current_token = None\r\n\r\n    def parse(self):\r\n        statements = []\r\n        while self.current_token:\r\n            print(self.current_token)\r\n            if self.current_token[0] == 'NEWLINE':\r\n                self.advance()  # Skip newline tokens\r\n            elif self.current_token[0] == 'IDENTIFIER':\r\n                statements.append(self.parse_assignment())\r\n            elif self.current_token[0] == 'KEYWORD':\r\n                if self.current_token[1] == 'if':\r\n                    statements.append(self.parse_if_statement())\r\n                elif self.current_token[1] == 'while':\r\n                    statements.append(self.parse_while_loop())\r\n                elif self.current_token[1] == 'def':\r\n                    statements.append(self.parse_function_definition())\r\n                else:\r\n                    raise SyntaxError(f\"Invalid keyword: {self.current_token[1]}\")\r\n            elif self.current_token[0] == 'PRINT_START':\r\n                statements.append(self.parse_print_statement())\r\n            elif self.current_token[0] == 'COMMENT':\r\n                # Ignore comments\r\n                self.advance()\r\n            else:\r\n                raise SyntaxError(f\"Unexpected token: {self.current_token[0]}\")\r\n\r\n            # Check if there's more to parse after an if statement\r\n            if statements and statements[-1][0] == 'IF_STATEMENT' and not statements[-1][3]:\r\n                # If the if statement has no else branch, continue parsing\r\n                continue\r\n            elif self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':\r\n                # If the current token is an else keyword, return to parse_if_statement to handle the else branch\r\n                return statements\r\n\r\n        return statements\r\n\r\n    def parse_assignment(self):\r\n        identifier = self.current_token[1]\r\n        self.consume('IDENTIFIER')\r\n        self.consume('EQUALS')  # Ensure the assignment operator is '='\r\n\r\n        # Parse the expression\r\n        #print(identifier)\r\n        expression = self.parse_expression()\r\n        #print(expression)\r\n\r\n        # Consume the newline token\r\n        self.consume('NEWLINE')\r\n\r\n        print(('ASSIGNMENT', identifier, expression))\r\n        return ('ASSIGNMENT', identifier, expression)\r\n\r\n    def parse_expression(self):\r\n        print(\"Parsing expression...\")\r\n        expression = self.parse_simple_expression()\r\n        print(expression)\r\n\r\n        # Parse binary operations until reaching a newline or a higher precedence operator\r\n        while self.current_token and self.current_token[1] in operators and self.current_token[1] != ':':\r\n            operator = operators[self.current_token[1]]\r\n            print(\"Operator:\", operator)\r\n            self.advance()  # Consume the operator\r\n            next_operand = self.parse_simple_expression()\r\n            print(\"Next operand:\", next_operand)\r\n            expression = (operator, expression, next_operand)\r\n\r\n        print(\"Parsed expression:\", expression)\r\n        return expression\r\n\r\n    def parse_simple_expression(self):\r\n        # Parse the operand (identifier, number, or string)\r\n        if self.current_token[0] in ('NUMBER', 'IDENTIFIER', 'STRING'):\r\n            expression = self.current_token[1]\r\n            self.advance()\r\n        else:\r\n            raise SyntaxError(f\"Invalid expression: {self.current_token[1]}\")\r\n\r\n        return expression\r\n\r\n    def parse_if_statement(self):\r\n        self.consume('KEYWORD')  # if\r\n        condition = self.parse_expression()\r\n        self.consume('COLON')\r\n        self.consume('NEWLINE')\r\n\r\n        # Parse true condition statements\r\n        true_statements = self.parse_statements()\r\n\r\n        false_statements = []\r\n\r\n        # Check for else branch\r\n        if self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':\r\n            self.consume('KEYWORD')  # else\r\n            self.consume('COLON')\r\n            self.consume('NEWLINE')\r\n\r\n            # Parse false condition statements\r\n            false_statements = self.parse_statements()\r\n\r\n        # Return the entire if-else block\r\n        print(('IF_STATEMENT', condition, true_statements, false_statements))\r\n        return ('IF_STATEMENT', condition, true_statements, false_statements)\r\n\r\n    def parse_statements(self):\r\n        statements = []\r\n        current_indentation = None\r\n\r\n        while self.current_token and self.current_token[0] != 'DEDENT':\r\n            if self.current_token[0] == 'NEWLINE':\r\n                self.advance()  # Skip newline tokens\r\n            elif self.current_token[0] == 'INDENT':\r\n                current_indentation = self.current_token[1]\r\n                self.advance()\r\n            else:\r\n                if self.current_token[0] == 'DEDENT':\r\n                    break\r\n                if current_indentation is not None and self.current_token[1] != current_indentation:\r\n                    raise IndentationError(\"Inconsistent indentation\")\r\n\r\n                statements.append(self.parse())\r\n\r\n        return statements\r\n\r\n    def parse_while_loop(self):\r\n        self.consume('KEYWORD')  # while\r\n        condition = self.parse_expression()\r\n        self.consume('COLON')\r\n        self.consume('NEWLINE')\r\n        loop_statements = self.parse()\r\n        return ('WHILE_LOOP', condition, loop_statements)\r\n\r\n    def parse_function_definition(self):\r\n        self.consume('KEYWORD')  # def\r\n        function_name = self.current_token[1]\r\n        self.consume('IDENTIFIER')\r\n        self.consume('LEFT_PAREN')\r\n        parameters = []\r\n        while self.current_token[0] == 'IDENTIFIER':\r\n            parameters.append(self.current_token[1])\r\n            self.consume('IDENTIFIER')\r\n            if self.current_token[0] == 'COMMA':\r\n                self.consume('COMMA')\r\n        self.consume('RIGHT_PAREN')\r\n        self.consume('COLON')\r\n        self.consume('NEWLINE')\r\n        function_body = self.parse()\r\n        return ('FUNCTION_DEFINITION', function_name, parameters, function_body)\r\n\r\n    def parse_print_statement(self):\r\n        self.consume('PRINT_START')\r\n        value = self.parse_expression()\r\n        self.consume('PRINT_END')\r\n        self.consume('NEWLINE')\r\n        print(('PRINT', value))\r\n        return ('PRINT', value)\r\n\r\n\r\n# Example usage\r\nparser = Parser(lex(code))\r\nprint(parser.current_token)\r\nstatements = parser.parse()\r\nfor statement in statements:\r\n    print(statement)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CatsCooking.py b/CatsCooking.py
+--- a/CatsCooking.py	(revision ebb8073a56035b63427376e160a52acd836b3115)
++++ b/CatsCooking.py	(date 1713728356598)
+@@ -196,6 +196,7 @@
+         self.tokens = tokens
+         self.current_token_idx = 0
+         self.current_token = self.tokens[self.current_token_idx]
++        self.operators = {'>': 'GREATER_THAN', '<': 'LESS_THAN', '==': 'EQUALS'}
+ 
+     def consume(self, token_type):
+         if self.current_token[0] == token_type:
+@@ -289,47 +290,38 @@
+         return expression
+ 
+     def parse_if_statement(self):
+-        self.consume('KEYWORD')  # if
++        self.consume('KEYWORD')  # 'if'
+         condition = self.parse_expression()
+         self.consume('COLON')
+         self.consume('NEWLINE')
+ 
+         # Parse true condition statements
+         true_statements = self.parse_statements()
+-
+         false_statements = []
+ 
+         # Check for else branch
+         if self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':
+-            self.consume('KEYWORD')  # else
++            self.consume('KEYWORD')  # 'else'
+             self.consume('COLON')
+             self.consume('NEWLINE')
+ 
+             # Parse false condition statements
+             false_statements = self.parse_statements()
+ 
+-        # Return the entire if-else block
+-        print(('IF_STATEMENT', condition, true_statements, false_statements))
+-        return ('IF_STATEMENT', condition, true_statements, false_statements)
++        # Print the structured if-else block for debugging
++        if_statement = ('IF_STATEMENT', condition, true_statements, false_statements)
++        print(if_statement)
++        return if_statement
+ 
+     def parse_statements(self):
+         statements = []
+-        current_indentation = None
+-
+         while self.current_token and self.current_token[0] != 'DEDENT':
+             if self.current_token[0] == 'NEWLINE':
+                 self.advance()  # Skip newline tokens
+             elif self.current_token[0] == 'INDENT':
+-                current_indentation = self.current_token[1]
+-                self.advance()
++                self.advance()  # Only move past the indent
+             else:
+-                if self.current_token[0] == 'DEDENT':
+-                    break
+-                if current_indentation is not None and self.current_token[1] != current_indentation:
+-                    raise IndentationError("Inconsistent indentation")
+-
+-                statements.append(self.parse())
+-
++                statements.append(self.parse_expression())
+         return statements
+ 
+     def parse_while_loop(self):
+@@ -358,12 +350,19 @@
+         return ('FUNCTION_DEFINITION', function_name, parameters, function_body)
+ 
+     def parse_print_statement(self):
++        # Assuming that the print token format is 'print|<message>|'
+         self.consume('PRINT_START')
+-        value = self.parse_expression()
+-        self.consume('PRINT_END')
+-        self.consume('NEWLINE')
+-        print(('PRINT', value))
+-        return ('PRINT', value)
++        message = []
++        while self.current_token[0] != 'PRINT_END':
++            message.append(self.current_token[1])
++            self.advance()
++        self.consume('PRINT_END')  # Consume the print end '|'
++        self.advance()  # Move past the newline token if present
++
++        # Join the message tokens to form the complete message string
++        full_message = ' '.join(message)
++        print(('PRINT', full_message))
++        return ('PRINT', full_message)
+ 
+ 
+ # Example usage
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"c7270fbd-8810-4060-9587-7097cd7a97d5\" name=\"Changes\" comment=\"Todo\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 2\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2fFaqnfziylGKySPlLRyx96oINW\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python.main.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/turta/PycharmProjects/LegendBasicExpressionEvaluator2&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"LegendLanguage\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-5a2391486177-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13763.11\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"c7270fbd-8810-4060-9587-7097cd7a97d5\" name=\"Changes\" comment=\"\" />\r\n      <created>1713399472605</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1713399472605</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"First\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1713399583811</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1713399583811</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Operate\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1713411248146</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1713411248146</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Parsing fixes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1713423972744</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1713423972744</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Todo\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1713494042466</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1713494042467</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"First\" />\r\n    <MESSAGE value=\"Operate\" />\r\n    <MESSAGE value=\"Parsing fixes\" />\r\n    <MESSAGE value=\"Todo\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Todo\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <default-breakpoints>\r\n        <breakpoint type=\"python-exception\">\r\n          <properties notifyOnTerminate=\"true\" exception=\"BaseException\">\r\n            <option name=\"notifyOnTerminate\" value=\"true\" />\r\n          </properties>\r\n        </breakpoint>\r\n      </default-breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision ebb8073a56035b63427376e160a52acd836b3115)
++++ b/.idea/workspace.xml	(date 1713728315058)
+@@ -4,7 +4,10 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="Todo" />
++    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="Enviroment function comments">
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/CatsCooking.py" beforeDir="false" afterPath="$PROJECT_DIR$/CatsCooking.py" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -32,15 +35,16 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Users/turta/PycharmProjects/LegendBasicExpressionEvaluator2&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "Python.CatsCooking.executor": "Debug",
++    "Python.main.executor": "Run",
++    "RunOnceActivity.OpenProjectViewOnStart": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
++    "last_opened_file_path": "C:/Users/turta/PycharmProjects/LegendBasicExpressionEvaluator2"
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager">
+     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+       <module name="LegendLanguage" />
+@@ -113,7 +117,23 @@
+       <option name="project" value="LOCAL" />
+       <updated>1713494042467</updated>
+     </task>
+-    <option name="localTasksCounter" value="5" />
++    <task id="LOCAL-00005" summary="Enviroment function">
++      <option name="closed" value="true" />
++      <created>1713648257194</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1713648257194</updated>
++    </task>
++    <task id="LOCAL-00006" summary="Enviroment function comments">
++      <option name="closed" value="true" />
++      <created>1713648439048</created>
++      <option name="number" value="00006" />
++      <option name="presentableId" value="LOCAL-00006" />
++      <option name="project" value="LOCAL" />
++      <updated>1713648439048</updated>
++    </task>
++    <option name="localTasksCounter" value="7" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -132,7 +152,9 @@
+     <MESSAGE value="Operate" />
+     <MESSAGE value="Parsing fixes" />
+     <MESSAGE value="Todo" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Todo" />
++    <MESSAGE value="Enviroment function" />
++    <MESSAGE value="Enviroment function comments" />
++    <option name="LAST_COMMIT_MESSAGE" value="Enviroment function comments" />
+   </component>
+   <component name="XDebuggerManager">
+     <breakpoint-manager>

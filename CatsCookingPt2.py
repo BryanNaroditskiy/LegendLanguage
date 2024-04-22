@@ -1,8 +1,8 @@
 import re
 # Example usage
-code = """
-2*2
-"""
+line_of_code = 'x+1 > "Ay want to see something cool?"'
+
+
 
 code2 = """
 ; Variable declarations
@@ -114,7 +114,7 @@ def lex(code):
     return tokens
 
 
-tokens = lex(code)
+tokens = lex(line_of_code)
 print(tokens)
 
 
@@ -130,160 +130,109 @@ class Parser:
         else:
             raise SyntaxError(f"Expected {token_type}, got {self.current_token[0]}")
 
+    # def advance(self):
+    #     self.current_token_idx += 1
+    #     if self.current_token_idx < len(self.tokens):
+    #         self.current_token = self.tokens[self.current_token_idx]
+    #     else:
+    #         self.current_token = None
+
     def advance(self):
-        self.current_token_idx += 1
-        if self.current_token_idx < len(self.tokens):
-            self.current_token = self.tokens[self.current_token_idx]
-        else:
-            self.current_token = None
+        if len(self.tokens) > 0:
+            self.tokens.pop(0)
+            if len(self.tokens) > 0:
+                self.current_token = self.tokens[0]
 
     def parse(self):
-        statements = []
-        current_indentation = 0  # Track the current indentation level
+        if len(self.tokens) > 0:
+            #statements = []
+            current_indentation = 0  # Track the current indentation level
 
-        while self.current_token:
-            print(self.current_token)
-            if self.current_token[0] == 'NEWLINE':
-                self.advance()  # Skip newline tokens
-            elif self.current_token[0] == 'INDENT':
-                # Increase the current indentation level
-                current_indentation += 1
-                self.advance()  # Skip the indentation token
-            elif self.current_token[0] == 'DEDENT':
-                # Decrease the current indentation level
-                #current_indentation -= 1
-                break
-            # elif self.current_token[0] == 'IDENTIFIER':
-            #     statements.append(self.parse_assignment())
-            elif self.current_token[0] == 'KEYWORD':
-                if self.current_token[1] == 'if':
-                    statements.append(self.parse_if_statement())
-                elif self.current_token[1] == 'while':
-                    statements.append(self.parse_while_loop())
-                    self.advance()
-                elif self.current_token[1] == 'else':
-                    print("reached else")
-                    return statements  # Return the 'else' keyword to parse_if_statement
-                else:
-                    raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
-
-            # Parse arithmatic expressions
-            elif self.current_token[0] in ['NUMBER', 'IDENTIFIER']:
-                try:
-                    left = int(self.current_token[1])
-                except:
-                    left = self.current_token[1]
-                self.advance()
-                if self.current_token[0] in operators.values():
-                    operation = self.current_token[0]
-                    self.advance()
-                    if self.current_token[0] not in operators.values():
-                        try:
-                            right = int(self.current_token[1])
-                        except:
-                            right = self.current_token[1]
-                        expression = (operation, left, right)
-
-                        # Check if next token is an operator
-                        self.advance()
-                        while self.current_token[0] in operators.values():
-                            operation = self.current_token[0]
-
-                            self.advance()
-                            if self.current_token[0] in operators.values():
-                                raise SyntaxError(f"Invalid operation {expression} {operation} {self.current_token[0]}")
-                            else:
-                                try:
-                                    operand = int(self.current_token[1])
-                                except:
-                                    operand = self.current_token[1]
-                                expression = (operation, expression, operand)
-                                self.advance()
-
-                        print(expression)
-                        statements.append(expression)
+            while self.current_token:
+                if self.current_token[0] == 'NEWLINE':
+                    self.advance()  # Skip newline tokens
+                elif self.current_token[0] == 'INDENT':
+                    # Increase the current indentation level
+                    current_indentation += 1
+                    self.advance()  # Skip the indentation token
+                elif self.current_token[0] == 'DEDENT':
+                    # Decrease the current indentation level
+                    #current_indentation -= 1
+                    break
+                elif self.current_token[0] == 'KEYWORD':
+                    if self.current_token[1] == 'if':
+                        return self.parse_if_statement()
+                    # TODO Make this work with recursion
+                    # elif self.current_token[1] == 'while':
+                    #     return self.parse_while_loop()
+                    # elif self.current_token[1] == 'else':
+                    #     print("reached else")
+                    #     return statements  # Return the 'else' keyword to parse_if_statement
                     else:
-                        raise SyntaxError(f'Invalid addition: {num1}+{self.current_token[1]}')
+                        raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
 
-            elif self.current_token[0] == 'PRINT_START':
-                statements.append(self.parse_print_statement())
-            elif self.current_token[0] == 'COMMENT':
-                # Ignore comments
-                self.advance()
-            else:
-                raise SyntaxError(f"Unexpected token: {self.current_token[0]}")
-            print("test parse", statements)
-            # Check if there's more to parse after an if statement
-            if statements and statements[-1][0] == 'IF_STATEMENT' and not statements[-1][3]:
-                # If the if statement has no else branch, continue parsing
-                continue
-            elif self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':
-                # If the current token is an else keyword, return to parse_if_statement to handle the else branch
-                break
+                # Parsing single tokens
+                elif (len(self.tokens) == 1) or self.tokens[1][0] == 'NEWLINE':
+                    return self.current_token
+                # Parse arithmatic expressions
+                elif self.current_token[0] in ['NUMBER', 'IDENTIFIER']:
+                    try:
+                        left = int(self.current_token[1])
+                    except:
+                        left = self.current_token[1]
+                    self.advance()
+                    if self.current_token[0] in operators.values():
+                        operation = self.current_token[0]
+                        self.advance()
+                        if self.current_token[0] not in operators.values():
+                            try:
+                                right = int(self.current_token[1])
+                            except:
+                                right = self.current_token[1]
+                            expression = (operation, left, right)
 
-        return statements
+                            # Check if next token is an operator
+                            self.advance()
+                            while self.current_token and (self.current_token[0] in operators.values()):
+                                operation = self.current_token[0]
 
-    def parse_assignment(self):
-        identifier = self.current_token[1]
-        print(identifier)
-        self.consume('IDENTIFIER')
-        print("assign", self.current_token)
-        if self.current_token[0] == 'EQUALS':
-            self.consume('EQUALS')  # Ensure the assignment operator is '='
+                                self.advance()
+                                if operation in ['LESS_THAN', 'GREATER_THAN']:
+                                    try:
+                                        operand = self.parse()
+                                    except:
+                                        raise SyntaxError(f"{operation} is not followed by and operand.")
+                                    expression = (operation, expression, operand)
+                                    self.advance()
+                                elif self.current_token[0] not in operators.values():
+                                    try:
+                                        operand = int(self.current_token[1])
+                                    except:
+                                        operand = self.current_token[1]
+                                    expression = (operation, expression, operand)
+                                    self.advance()
+                                else:
+                                    raise SyntaxError(f"Invalid operation ('{operation}', {expression}, '{self.current_token[0]}')")
 
-            # Parse the expression
-            expression = self.parse_expression()
+                            print(expression)
+                            return expression
+                        else:
+                            raise SyntaxError(f"Invalid operation ('{operation}', {left}, '{self.current_token[0]}')")
 
-            # Consume the newline token
-            self.consume('NEWLINE')
-
-            print(('ASSIGNMENT', identifier, expression))
-            return ('ASSIGNMENT', identifier, expression)
-
-        elif self.current_token[0] == 'INCREMENT':
-            self.consume('INCREMENT')  # Consume the '+=' token
-
-            # Construct the expression for +=
-            increment_expression = self.parse_expression()
-
-            # Construct the expression for the augmented assignment
-            expression = ('ADD', identifier, increment_expression)
-
-            # Consume the newline token
-            self.consume('NEWLINE')
-
-            print("increment", ('ASSIGNMENT', identifier, expression))
-            return ('ASSIGNMENT', identifier, expression)
-
-    def parse_expression(self):
-        print("Parsing expression...")
-        expression = self.parse_simple_expression()
-        print(expression)
-
-        # Parse binary operations until reaching a newline or a higher precedence operator
-        while self.current_token and self.current_token[1] in operators and self.current_token[1] != ':':
-            if self.current_token[0] == 'AND' or self.current_token[1] == 'OR':
-                operator = operators[self.current_token[1]]
-                print("Operator:", operator)
-            operator = operators[self.current_token[1]]
-            print("Operator:", operator)
-            self.advance()  # Consume the operator
-            next_operand = self.parse_simple_expression()
-            print("Next operand:", next_operand)
-            expression = (operator, expression, next_operand)
-
-        print("Parsed expression:", expression)
-        return expression
-
-    def parse_simple_expression(self):
-        # Parse the operand (identifier, number, or string)
-        if self.current_token[0] in ('NUMBER', 'IDENTIFIER', 'STRING', 'KEYWORD'):
-            expression = self.current_token[1]
-            self.advance()
-        else:
-            raise SyntaxError(f"Invalid expression: {self.current_token[1]}")
-
-        return expression
+                elif self.current_token[0] == 'PRINT_START':
+                    return self.parse_print_statement()
+                elif self.current_token[0] == 'COMMENT':
+                    # Ignore comments
+                    self.advance()
+                else:
+                    raise SyntaxError(f"Unexpected token: {self.current_token[0]}")
+                # Check if there's more to parse after an if statement
+                # if statements and statements[-1][0] == 'IF_STATEMENT' and not statements[-1][3]:
+                #     # If the if statement has no else branch, continue parsing
+                #     continue
+                # elif self.current_token and self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'else':
+                #     # If the current token is an else keyword, return to parse_if_statement to handle the else branch
+                #     break
 
     def parse_print_expression(self):
         # Parse the operand (identifier, number, string, or composite expression)
@@ -394,36 +343,6 @@ class Parser:
 
         return ('WHILE_LOOP', condition, loop_statements)
 
-    def parse_function_definition(self):
-        self.consume('KEYWORD')  # def
-        function_name = self.current_token[1]
-        self.consume('IDENTIFIER')
-        self.consume('LEFT_PAREN')
-        parameters = []
-        while self.current_token[0] == 'IDENTIFIER':
-            parameters.append(self.current_token[1])
-            self.consume('IDENTIFIER')
-            if self.current_token[0] == 'COMMA':
-                self.consume('COMMA')
-        self.consume('RIGHT_PAREN')
-        self.consume('COLON')
-        self.consume('NEWLINE')
-
-        # Parse the function body statements
-        function_body = []
-
-        while self.current_token and self.current_token[0] != 'DEDENT':
-            if self.current_token[0] == 'NEWLINE':
-                self.advance()  # Skip newline tokens
-            elif self.current_token[0] == 'INDENT':
-                self.advance()  # Skip the indentation token
-            elif self.current_token[0] == 'KEYWORD' and self.current_token[1] == 'return':
-                function_body.append(self.parse_return_statement())
-            else:
-                # Parse the statement if it has the same or lower indentation level
-                function_body.append(self.parse())
-        return ('FUNCTION_DEFINITION', function_name, parameters, function_body)
-
     def parse_return_statement(self):
         self.consume('KEYWORD')  # return
         if self.current_token[0] != 'NEWLINE':
@@ -444,13 +363,5 @@ class Parser:
 
 
 # Example usage
-
-
-parser = Parser(lex(code))
-print(parser.current_token)
-statements = parser.parse()
-
-
-print("End of Run")
-for statement in statements:
-    print(statement)
+parser = Parser(lex(line_of_code))
+paser_output = parser.parse()
