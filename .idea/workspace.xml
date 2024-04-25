@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="Cait is my god">
+    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CatsCooking3.py" beforeDir="false" afterPath="$PROJECT_DIR$/CatsCooking3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CatsCookingPt2.py" beforeDir="false" afterPath="$PROJECT_DIR$/CatsCookingPt2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,17 +36,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.CatsCooking.executor": "Run",
-    "Python.CatsCookingPt2.executor": "Run",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Users/turta/PycharmProjects/LegendBasicExpressionEvaluator2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CatsCooking.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CatsCooking3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CatsCookingPt2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/turta/PycharmProjects/LegendBasicExpressionEvaluator2&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="LegendLanguage" />
@@ -141,7 +144,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713760931130</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Crowe has blesseth me with knowledge">
+      <option name="closed" value="true" />
+      <created>1713768554601</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1713768554601</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -163,17 +174,11 @@
     <MESSAGE value="Enviroment function" />
     <MESSAGE value="Enviroment function comments" />
     <MESSAGE value="Cait is my god" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cait is my god" />
+    <MESSAGE value="Crowe has blesseth me with knowledge" />
+    <option name="LAST_COMMIT_MESSAGE" value="Crowe has blesseth me with knowledge" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CatsCookingPt2.py</url>
-          <line>191</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
