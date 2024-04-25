@@ -258,7 +258,6 @@ class Parser:
         left_operand = self.parse_simple_expression()
         print("Left operand:", left_operand)
 
-
         # Parse binary operations until reaching a newline or a higher precedence operator
         while self.current_token and self.current_token[1] in operators and self.current_token[0] not in (
                 'COLON', 'AND', 'OR'):

@@ -1,7 +1,6 @@
 import re
 # Example usage
-line_of_code = 'x+1 > "Ay want to see something cool?"'
-
+line_of_code = '1+1>3'
 
 
 code2 = """
