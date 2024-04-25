@@ -1,4 +1,5 @@
 import re
+import math
 # Example usage
 code = """
 ; Variable declarations
@@ -8,8 +9,35 @@ t = 2.5  ; seconds
 mass = 5  ; kg
 message = "Hello, Legend!"
 print|'message'|
-max_test = max(9, 8) 
+
+;keyword/function testing
+max_test = max|9, 8|
+min_test = min|2, 3|
+sin_test = sin|45|
+cos_test = cos|45|
+tan_test = tan|45|
+sqrt_test = sqrt|81|
+momentum_test = momentum|2, 3|
+ke_test = kinetic_energy|2, 4|
+pe_test = potential_energy|2, 5|
+work_test = work|2, 2| ;4
+power_test = power|10, 5|
+impulse_test = impulse|2, 5|
+torque_test = torque|2, 3|
+ang_vel_test = angular_velocity|pi, 2|
+ang_accel_test = angular_acceleration|pi, 2|
+friction_test = friction|0.5, 10|
+pressure_test = pressure|100, 10|
+density_test = density|50, 10|
+moment_of_inertia_test = moment_of_inertia|10, 5|
+spring_test = spring_constant|20, 2|
+frequency_test = frequency|2|
+wavelength_test = wavelength|10, 2|
+
+
+
 print|max_test|
+print|min_test|
 ; Arithmetic operations
 result1 = distance / t
 print|result1|
@@ -28,8 +56,6 @@ while count < 5:
     print|"Count:", count|
     count = count + 1
 
-
-
 ; Reserved words usage
 if speed > 0 && t < 10:
     print|"The object is moving."|
@@ -45,19 +71,19 @@ else:
 
 # Keywords and operators
 keywords = {
-    'true', 'false', 'avg', 'max', 'min', 'sort', 'shuffle', 'reverse', 'union', 'intersection',
-    'sin', 'cos', 'tan', 'sqrt', 'random', 'lambda', 'if', 'else', 'while', 'repeat', 'time', 'def',
-    'acceleration', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work', 'power',
+    'true', 'false', 'max', 'min','sin', 'cos', 'tan', 'sqrt', 'if', 'else', 'while', 'def',
+    'print', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work', 'power',
     'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction', 'pressure',
-    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength', 'return'
+    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength', 'return', 'pi'
 }
+
 
 
 
 
 # Define the operators mapping
 operators = {
-    '+=': 'INCREMENT', '**': 'POWER', '+': 'ADD', '-': 'SUBTRACT', '*': 'MULTIPLY', '/': 'DIVIDE', '^': 'XOR',
+    '+=': 'INCREMENT', '**': 'POWER', '|': 'PIPE', '+': 'ADD', '-': 'SUBTRACT', '*': 'MULTIPLY', '/': 'DIVIDE', '^': 'XOR',
     '%': 'MODULO', '=': 'EQUALS', '!=': 'NOT_EQUALS', '>': 'GREATER_THAN', '<': 'LESS_THAN',
     '>=': 'GREATER_THAN_OR_EQUAL', '<=': 'LESS_THAN_OR_EQUAL', '&&': 'AND', '||': 'OR', '!': 'NOT',
     '(': 'LEFT_PAREN', ')': 'RIGHT_PAREN', ':': 'COLON'
@@ -68,13 +94,11 @@ identifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'
 number_regex = r'\d*\.\d+|\d+\.\d*|\d+'
 string_regex = r'"(?:[^"\\]|\\.)*"'
 comment_regex = r';.*'
-special_print_start = r'print\|'
-special_print_end = r'\|'
 whitespace_regex = r'\s+'
 
 # Combine all regex into one
 token_regex = re.compile(
-    f'({special_print_start}|{special_print_end}|{string_regex}|{number_regex}|' +
+    f'(|{string_regex}|{number_regex}|' +
     '|'.join(map(re.escape, operators.keys())) +  # Specific tokens for each operator
     f'|{identifier_regex}|{whitespace_regex}|{comment_regex}|\\n)'
 )
@@ -100,19 +124,67 @@ def lex(code):
             if token:
                 if token[0] == ';':  # Ignore comments
                     break
-                elif token.startswith('print|'):
-                    line_tokens.append(('PRINT_START', token))
-                elif token == '|':
-                    line_tokens.append(('PRINT_END', token))
+                # elif token.startswith('print|'):
+                #     line_tokens.append(('PRINT_START', token))
+                # elif token == '|':
+                #     line_tokens.append(('PRINT_END', token))
                 elif token in keywords:
                     if token == 'gravity':
                         line_tokens.append(('NUMBER', '9.8'))  # Replace 'gravity' keyword with its numeric value
+                    elif token == 'pi':
+                        line_tokens.append(('NUMBER', '3.14'))
+                    elif token == 'print':
+                        line_tokens.append(("PRINT", token))
                     elif token == 'max':
-                        line_tokens.append(('MAX_START', token))  # Token for start of max() function call
-                    elif token == '(':
-                        line_tokens.append(('LEFT_PAREN', token))
-                    elif token == ')':
-                        line_tokens.append(('RIGHT_PAREN', token))
+                        line_tokens.append(('MAX', token))  # Token for start of max() function call
+                    elif token == 'min':
+                        line_tokens.append(('MIN', token))
+                    elif token == 'sin':
+                        line_tokens.append(('SIN', token))
+                    elif token == 'tan':
+                        line_tokens.append(('TAN', token))
+                    elif token == 'cos':
+                        line_tokens.append(('COS', token))
+                    elif token == 'kinetic_energy':
+                        line_tokens.append(('KINETIC_ENERGY', token))
+                    elif token == 'potential_energy':
+                        line_tokens.append(('POTENTIAL_ENERGY', token))
+                    elif token == 'work':
+                        line_tokens.append(('WORK', token))
+                    elif token == 'momentum':
+                        line_tokens.append(('MOMENTUM', token))
+                    elif token == 'power':
+                        line_tokens.append(('POWER', token))
+                    elif token == 'impulse':
+                        line_tokens.append(('IMPULSE', token))
+                    elif token == 'torque':
+                        line_tokens.append(('TORQUE', token))
+                    elif token == 'angular_velocity':
+                        line_tokens.append(('ANGULAR_VELOCITY', token))
+                    elif token == 'angular_acceleration':
+                        line_tokens.append(('ANGULAR_ACCELERATION', token))
+                    elif token == 'friction':
+                        line_tokens.append(('FRICTION', token))
+                    elif token == 'pressure':
+                        line_tokens.append(('PRESSURE', token))
+                    elif token == 'density':
+                        line_tokens.append(('DENSITY', token))
+                    elif token == 'moment_of_inertia':
+                        line_tokens.append(('MOMENT_OF_INERTIA', token))
+                    elif token == 'spring_constant':
+                        line_tokens.append(('SPRING_CONSTANT', token))
+                    elif token == 'frequency':
+                        line_tokens.append(('FREQUENCY', token))
+                    elif token == 'wavelength':
+                        line_tokens.append(('WAVELENGTH', token))
+                    elif token == 'sqrt':
+                        line_tokens.append(('SQUARE_ROOT', token))
+                    elif token == '|':
+                        line_tokens.append(('PIPE', token))
+                    # elif token == '(':
+                    #     line_tokens.append(('LEFT_PAREN', token))
+                    # elif token == ')':
+                    #     line_tokens.append(('RIGHT_PAREN', token))
                     elif token == ',':
                         line_tokens.append(('COMMA', token))
                     else:
@@ -189,7 +261,7 @@ class Parser:
                     return statements  # Return the 'else' keyword to parse_if_statement
                 else:
                     raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
-            elif self.current_token[0] == 'PRINT_START':
+            elif self.current_token[0] == 'PRINT':
                 statements.append(self.parse_print_statement())
             elif self.current_token[0] == 'COMMENT':
                 # Ignore comments
@@ -243,18 +315,29 @@ class Parser:
     def parse_expression(self):
         print("Parsing expression...")
 
-        if self.current_token[0] == 'MAX_START':
-            self.consume('MAX_START')  # Consume 'max'
-            self.consume('LEFT_PAREN')  # Consume '('
+        if self.current_token[0] in ('MAX', 'MIN', 'WORK', 'POWER', 'IMPULSE', 'TORQUE', 'ANGULAR_VELOCITY', 'ANGULAR_ACCELERATION', 'FRICTION', 'PRESSURE', 'DENSITY', 'MOMENT_OF_INERTIA', 'SPRING_CONSTANT', 'WAVELENGTH', 'MOMENTUM', 'KINETIC_ENERGY', 'POTENTIAL_ENERGY'):
+            keyword = self.current_token[0]
+            self.advance()  # Consume 'max'
+            self.consume('PIPE')  # Consume '('
             print(self.current_token)
             arguments = [self.parse_simple_expression()]  # Parse the first argument
             print(arguments)
             while self.current_token[0] == 'NUMBER':
                 arguments.append(self.parse_simple_expression())  # Parse additional arguments
 
-            self.consume('RIGHT_PAREN')  # Consume ')'
-            return ('MAX', arguments)  # Return tuple for max function call
+            self.consume('PIPE')  # Consume ')'
+            return (keyword, arguments)  # Return tuple for max function call
             # Parse the left operand
+        if self.current_token[0] in ('SIN', 'COS', 'TAN', 'SQUARE_ROOT', 'FREQUENCY'):
+            keyword = self.current_token[0]
+            self.advance()
+            self.consume('PIPE')
+            arguments = self.parse_simple_expression()
+            self.consume('PIPE')
+            return (keyword, arguments)
+
+
+
         left_operand = self.parse_simple_expression()
         print("Left operand:", left_operand)
 
@@ -472,10 +555,11 @@ class Parser:
         return ('FUNCTION_CALL', function_name, arguments)
 
     def parse_print_statement(self):
-        self.consume('PRINT_START')
+        self.consume('PRINT')
+        self.consume('PIPE')
         value = self.parse_print_expression()
         print("print", value)
-        self.consume('PRINT_END')
+        self.consume('PIPE')
         self.consume('NEWLINE')
         print(('PRINT', value))
         return ('PRINT', value)
@@ -536,7 +620,7 @@ class Interpreter:
         if expression[0] == 'NUMBER' or expression[0] == 'STRING':
             if expression[0] == 'STRING':
                 return "'"+ expression[1] + "'"
-            return expression[1]
+            return float(expression[1])
         elif expression[0] == 'IDENTIFIER':
             return expression[1]
         elif expression[0] == 'ADD':
@@ -557,6 +641,101 @@ class Interpreter:
             arguments = expression[1]
             values = [Interpreter._interpret_expression(arg) for arg in arguments]
             return max(values)
+        elif expression[0] == 'MIN':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return min(values)
+        elif expression[0] == 'SQUARE_ROOT':
+            arguments = expression[1]
+            values = Interpreter._interpret_expression(arguments)
+            return math.sqrt(values)
+        elif expression[0] == 'SIN':
+            arguments = expression[1]
+            values = Interpreter._interpret_expression(arguments)
+            values = math.radians(values)
+            return math.sin(values)
+        elif expression[0] == 'COS':
+            arguments = expression[1]
+            values = Interpreter._interpret_expression(arguments)
+            values = math.radians(values)
+            return math.cos(values)
+        elif expression[0] == 'TAN':
+            arguments = expression[1]
+            values = Interpreter._interpret_expression(arguments)
+            values = math.radians(values)
+            return math.tan(values)
+        elif expression[0] == 'KINETIC_ENERGY':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return 0.5 * values[0] * values[1] ** 2 #Assumes first value is mass & second is velocity (joules)
+        elif expression[0] == 'POTENTIAL_ENERGY':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1] * 9.8 #assumes first value is mass and second is height (joules)
+        elif expression[0] == 'WORK':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1] # force * displacement (Joules)
+        elif expression[0] == 'POWER':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #work/time (Watts)
+        elif expression[0] == 'IMPULSE':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1] #force * delta_time (joules)
+        elif expression[0] == 'TORQUE':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1] #moment_arm * force (joules)
+        elif expression[0] == 'ANGULAR_VELOCITY':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #delta_theta/delta time (radians per second)
+        elif expression[0] == 'ANGULAR_ACCELERATION':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #delta_omega/delta_time (radians per second squared)
+        elif expression[0] == 'FRICTION':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #mu * normal_force (fricitional force in newtons)
+        elif expression[0] == 'PRESSURE':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #force/area (pascals)
+        elif expression[0] == 'DENSITY':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #mass/volume (in kilograms per cubic meter)
+        elif expression[0] == 'MOMENT_OF_INERTIA':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1] ** 2 #mass * radius (in  kilogram square meters)
+        elif expression[0] == 'SPRING_CONSTANT':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #force/displacement (newtons per meter)
+        elif expression[0] == 'FREQUENCY':
+            arguments = expression[1]
+            values = Interpreter._interpret_expression(arguments)
+            return 1/values #period (in hertz)
+        elif expression[0] == 'WAVELENGTH':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0]/values[1] #speed/frequency in hertz
+        elif expression[0] == 'MOMENTUM':
+            arguments = expression[1]
+            values = [Interpreter._interpret_expression(arg) for arg in arguments]
+            return values[0] * values[1]
+
+
+
+
+
+
+
+
 
     @staticmethod
     def _interpret_block(block):
