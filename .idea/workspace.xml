@@ -4,10 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="">
+    <list default="true" id="c7270fbd-8810-4060-9587-7097cd7a97d5" name="Changes" comment="UML Chart">
+      <change afterPath="$PROJECT_DIR$/Interpeter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Structures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_17_2024_11_30_PM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_17_2024_11_30_PM__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_17_2024_9_54_PM_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_17_2024_9_54_PM__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CatsCooking3.py" beforeDir="false" afterPath="$PROJECT_DIR$/CatsCooking3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CatsCookingPt2.py" beforeDir="false" afterPath="$PROJECT_DIR$/CatsCookingPt2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LexicalAnalyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/LexicalAnalyzer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +159,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713768554601</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="UML Chart">
+      <option name="closed" value="true" />
+      <created>1714007765532</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1714007765532</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -175,7 +190,8 @@
     <MESSAGE value="Enviroment function comments" />
     <MESSAGE value="Cait is my god" />
     <MESSAGE value="Crowe has blesseth me with knowledge" />
-    <option name="LAST_COMMIT_MESSAGE" value="Crowe has blesseth me with knowledge" />
+    <MESSAGE value="UML Chart" />
+    <option name="LAST_COMMIT_MESSAGE" value="UML Chart" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

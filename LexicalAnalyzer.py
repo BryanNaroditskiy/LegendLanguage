@@ -1,96 +1,98 @@
+import Structures
 import re
-# Token types
-keywords = {
-    'true', 'false', 'avg', 'max', 'min', 'sort', 'shuffle', 'reverse', 'union', 'intersection',
-    'sin', 'cos', 'tan', 'sqrt', 'random', 'lambda', 'if', 'else', 'repeat', 'time',
-    'acceleration', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work', 'power',
-    'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction', 'pressure',
-    'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength'
-}
 
-operators = {'+', '-', '*', '/', '^', '%', '=', '!=', '>', '<', '>=', '<=', '&&', '||', '!', '(', ')'}
-
-# Regular expressions
-identifier_regex = r'[a-zA-Z_][a-zA-Z0-9_]*'
-number_regex = r'\d+'
-string_regex = r'"(?:[^"\\]|\\.)*"'
-comment_regex = r';.*'
-whitespace_regex = r'\s+'
-
-token_regex = re.compile(f'({identifier_regex}|{number_regex}|{string_regex}|'
-                         f'{"|".join(map(re.escape, operators))}|{whitespace_regex}|{comment_regex})')
-
-
-
-def lex(code):
+def lex(code,):
     tokens = []
-    for match in re.finditer(token_regex, code):
-        token = match.group().strip()
-        if token:
-            if token[0] == ';':  # Ignore comments
-                continue
-            elif token in keywords:
-                tokens.append(('KEYWORD', token))
-            elif token in operators:
-                tokens.append(('OPERATOR', token))
-            elif re.match(number_regex, token):
-                tokens.append(('NUMBER', token))
-            elif re.match(r'"[^"]*"', token):  # Adjusted to recognize string literals
-                tokens.append(('STRING', token[1:-1]))  # Remove quotes
-            else:
-                tokens.append(('IDENTIFIER', token))
+    lines = code.split('\n')  # Split the code into lines
+    current_indentation = 0
+    for line in lines:
+        line_tokens = []
+        # Determine the indentation level
+        indentation = len(line) - len(line.lstrip())
+        while indentation < current_indentation:
+            line_tokens.append(('DEDENT', current_indentation))
+            current_indentation -= 4
+        if indentation > current_indentation:
+            line_tokens.append(('INDENT', indentation))
+            current_indentation = indentation
+        for match in re.finditer(Structures.token_regex, line):
+            token = match.group().strip()
+            if token:
+                if token[0] == ';':  # Ignore comments
+                    break
+                # elif token.startswith('print|'):
+                #     line_tokens.append(('PRINT_START', token))
+                # elif token == '|':
+                #     line_tokens.append(('PRINT_END', token))
+                elif token in Structures.keywords:
+                    if token == 'gravity':
+                        line_tokens.append(('NUMBER', '9.8'))  # Replace 'gravity' keyword with its numeric value
+                    elif token == 'pi':
+                        line_tokens.append(('NUMBER', '3.14'))
+                    elif token == 'print':
+                        line_tokens.append(("PRINT", token))
+                    elif token == 'max':
+                        line_tokens.append(('MAX', token))  # Token for start of max() function call
+                    elif token == 'min':
+                        line_tokens.append(('MIN', token))
+                    elif token == 'sin':
+                        line_tokens.append(('SIN', token))
+                    elif token == 'tan':
+                        line_tokens.append(('TAN', token))
+                    elif token == 'cos':
+                        line_tokens.append(('COS', token))
+                    elif token == 'kinetic_energy':
+                        line_tokens.append(('KINETIC_ENERGY', token))
+                    elif token == 'potential_energy':
+                        line_tokens.append(('POTENTIAL_ENERGY', token))
+                    elif token == 'work':
+                        line_tokens.append(('WORK', token))
+                    elif token == 'momentum':
+                        line_tokens.append(('MOMENTUM', token))
+                    elif token == 'power':
+                        line_tokens.append(('POWER', token))
+                    elif token == 'impulse':
+                        line_tokens.append(('IMPULSE', token))
+                    elif token == 'torque':
+                        line_tokens.append(('TORQUE', token))
+                    elif token == 'angular_velocity':
+                        line_tokens.append(('ANGULAR_VELOCITY', token))
+                    elif token == 'angular_acceleration':
+                        line_tokens.append(('ANGULAR_ACCELERATION', token))
+                    elif token == 'friction':
+                        line_tokens.append(('FRICTION', token))
+                    elif token == 'pressure':
+                        line_tokens.append(('PRESSURE', token))
+                    elif token == 'density':
+                        line_tokens.append(('DENSITY', token))
+                    elif token == 'moment_of_inertia':
+                        line_tokens.append(('MOMENT_OF_INERTIA', token))
+                    elif token == 'spring_constant':
+                        line_tokens.append(('SPRING_CONSTANT', token))
+                    elif token == 'frequency':
+                        line_tokens.append(('FREQUENCY', token))
+                    elif token == 'wavelength':
+                        line_tokens.append(('WAVELENGTH', token))
+                    elif token == 'sqrt':
+                        line_tokens.append(('SQUARE_ROOT', token))
+                    elif token == '|':
+                        line_tokens.append(('PIPE', token))
+                    # elif token == '(':
+                    #     line_tokens.append(('LEFT_PAREN', token))
+                    # elif token == ')':
+                    #     line_tokens.append(('RIGHT_PAREN', token))
+                    elif token == ',':
+                        line_tokens.append(('COMMA', token))
+                    else:
+                        line_tokens.append(('KEYWORD', token))
+                elif token in Structures.operators:
+                    line_tokens.append((Structures.operators[token], token))  # Use specific token for each operator
+                elif re.match(Structures.number_regex, token):
+                    line_tokens.append(('NUMBER', token))
+                elif re.match(Structures.string_regex, token):
+                    line_tokens.append(('STRING', token[1:-1]))  # Remove quotes
+                else:
+                    line_tokens.append(('IDENTIFIER', token))
+        tokens.extend(line_tokens)
+        tokens.append(('NEWLINE', '\n'))  # Add a newline token after each line
     return tokens
-
-
-# Example usage
-input_stream = """
-; Variable declarations
-speed = 10.5  ; km/h
-distance = 100  ; meters
-time = 2.5  ; seconds
-mass = 5  ; kg
-message = "Hello, Legend!"
-
-; Arithmetic operations
-result1 = distance / time
-result2 = speed * time
-result3 = mass * 9.8  ; gravitational constant
-
-; Conditional statements
-if result1 > 20:
-    print("The speed is greater than 20 m/s.")
-else:
-    print("The speed is not greater than 20 m/s.")
-
-; Looping
-count = 0
-while count < 5:
-    print("Count:", count)
-    count += 1
-
-; Function definition
-def calculate_energy(mass, velocity):
-    return 0.5 * mass * velocity**2
-
-; Function call
-energy = calculate_energy(2, 10)
-
-; Reserved words usage
-if speed > 0 and time < 10:
-    print("The object is moving.")
-elif time >= 10:
-    print("The object has stopped.")
-else:
-    print("Invalid condition.")
-
-; Comments
-; This is a single-line comment
-"""
-
-print(lex(input_stream))
-# reserved_words = {'true', 'false', 'avg', 'max', 'min', 'sort', 'shuffle', 'reverse', 'union', 'intersection',
-#                   'sin', 'cos', 'tan', 'sqrt', 'random', 'lambda', 'if', 'else', 'repeat', 'time',
-#                   'acceleration', 'momentum', 'gravity', 'kinetic_energy', 'potential_energy', 'work',
-#                   'power', 'impulse', 'torque', 'angular_velocity', 'angular_acceleration', 'friction',
-#                   'pressure', 'density', 'moment_of_inertia', 'spring_constant', 'frequency', 'wavelength',
-#                   'damping_coefficient', 'print', 'while', 'def'}  # Reserved words from the Legend language specification
