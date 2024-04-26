@@ -24,7 +24,6 @@ class Parser:
         current_indentation = 0  # Track the current indentation level
 
         while self.current_token:
-            print(self.current_token)
             if self.current_token[0] == 'NEWLINE':
                 self.advance()  # Skip newline tokens
             elif self.current_token[0] == 'INDENT':
@@ -32,8 +31,6 @@ class Parser:
                 current_indentation += 1
                 self.advance()  # Skip the indentation token
             elif self.current_token[0] == 'DEDENT':
-                # Decrease the current indentation level
-                #current_indentation -= 1
                 break
             elif self.current_token[0] == 'IDENTIFIER':
                 statements.append(self.parse_assignment())
@@ -47,7 +44,7 @@ class Parser:
                     statements.append(self.parse_function_definition())
                     self.advance()
                 elif self.current_token[1] == 'else':
-                    print("reached else")
+
                     return statements  # Return the 'else' keyword to parse_if_statement
                 else:
                     raise SyntaxError(f"Invalid keyword: {self.current_token[1]}")
@@ -58,7 +55,7 @@ class Parser:
                 self.advance()
             else:
                 raise SyntaxError(f"Unexpected token: {self.current_token[0]}")
-            print("test parse", statements)
+
             # Check if there's more to parse after an if statement
             if statements and statements[-1][0] == 'IF_STATEMENT' and not statements[-1][3]:
                 # If the if statement has no else branch, continue parsing
@@ -71,20 +68,20 @@ class Parser:
 
     def parse_assignment(self):
         identifier = self.current_token[1]
-        print(identifier)
+
         self.consume('IDENTIFIER')
-        print("assign", self.current_token)
+
         if self.current_token[0] == 'EQUALS':
             self.consume('EQUALS')  # Ensure the assignment operator is '='
 
             # Parse the expression
-            print(self.current_token)
+
             expression = self.parse_expression()
 
             # Consume the newline token
             self.consume('NEWLINE')
 
-            print(('ASSIGNMENT', identifier, expression))
+
             return ('ASSIGNMENT', identifier, expression)
 
         elif self.current_token[0] == 'INCREMENT':
@@ -99,19 +96,19 @@ class Parser:
             # Consume the newline token
             self.consume('NEWLINE')
 
-            print("increment", ('ASSIGNMENT', identifier, expression))
+
             return ('ASSIGNMENT', identifier, expression)
 
     def parse_expression(self):
-        print("Parsing expression...")
+
 
         if self.current_token[0] in ('MAX', 'MIN', 'WORK', 'POWER', 'IMPULSE', 'TORQUE', 'ANGULAR_VELOCITY', 'ANGULAR_ACCELERATION', 'FRICTION', 'PRESSURE', 'DENSITY', 'MOMENT_OF_INERTIA', 'SPRING_CONSTANT', 'WAVELENGTH', 'MOMENTUM', 'KINETIC_ENERGY', 'POTENTIAL_ENERGY'):
             keyword = self.current_token[0]
             self.advance()  # Consume 'max'
             self.consume('PIPE')  # Consume '('
-            print(self.current_token)
+
             arguments = [self.parse_simple_expression()]  # Parse the first argument
-            print(arguments)
+
             while self.current_token[0] == 'NUMBER':
                 arguments.append(self.parse_simple_expression())  # Parse additional arguments
 
@@ -129,20 +126,18 @@ class Parser:
 
 
         left_operand = self.parse_simple_expression()
-        print("Left operand:", left_operand)
+
 
         # Parse binary operations until reaching a newline or a higher precedence operator
         while self.current_token and self.current_token[1] in Structures.operators and self.current_token[0] not in (
                 'COLON', 'AND', 'OR'):
             operator = Structures.operators[self.current_token[1]]
-            print("Operator:", operator)
+
             self.advance()  # Consume the operator
             next_operand = self.parse_simple_expression()
-            print("Next operand:", next_operand)
-            left_operand = (operator, left_operand, next_operand)
-            print("Updated expression:", left_operand)
 
-        print("Parsed expression:", left_operand)
+            left_operand = (operator, left_operand, next_operand)
+
 
         # Check if there's an 'AND' keyword
         if self.current_token and self.current_token[0] == 'AND':
@@ -154,16 +149,16 @@ class Parser:
             while self.current_token and self.current_token[1] in Structures.operators and self.current_token[0] not in (
                     'COLON', 'AND', 'OR'):
                 operator = Structures.operators[self.current_token[1]]
-                print("Operator:", operator)
+
                 self.advance()  # Consume the operator
                 next_operand = self.parse_simple_expression()
-                print("Next operand:", next_operand)
+
                 right_operand = (operator, right_operand, next_operand)
-                print("Updated expression:", left_operand)
+
 
             # Create the expression tuple
             left_operand = (keyword, left_operand, right_operand)
-            print("tag", left_operand)
+
         return left_operand
 
 
@@ -206,9 +201,9 @@ class Parser:
         self.consume('NEWLINE')
 
         # Parse true condition statements
-        print("here", self.current_token)
+
         true_statements = self.parse_statements()
-        print(true_statements)
+
 
         false_statements = []
 
@@ -222,7 +217,6 @@ class Parser:
             false_statements = self.parse_statements()
 
         # Return the entire if-else block
-        print(('IF_STATEMENT', condition, true_statements, false_statements))
         return ('IF_STATEMENT', condition, true_statements, false_statements)
 
     def parse_statements(self):
@@ -230,7 +224,6 @@ class Parser:
         current_indentation = 0
 
         while self.current_token and self.current_token[0] != 'DEDENT':
-            print("statement current", self.current_token)
             if self.current_token[0] == 'NEWLINE':
                 self.advance()  # Skip newline tokens
             elif self.current_token[0] == 'INDENT':
@@ -241,9 +234,9 @@ class Parser:
                 break
             else:
                 # Parse the statement
-                print(self.current_token)
+
                 statement = self.parse()
-                print("test state", statement)
+
                 statements.append(statement)
 
         # Check if we've reached the end of the block
@@ -264,7 +257,6 @@ class Parser:
 
         loop_statements = []
         current_indentation = 0
-        print("while testing", self.current_token)
 
         # Parse statements inside the while loop until dedent is encountered
         while self.current_token and self.current_token[0] != 'DEDENT':
@@ -347,8 +339,6 @@ class Parser:
         self.consume('PRINT')
         self.consume('PIPE')
         value = self.parse_print_expression()
-        print("print", value)
         self.consume('PIPE')
         self.consume('NEWLINE')
-        print(('PRINT', value))
         return ('PRINT', value)
