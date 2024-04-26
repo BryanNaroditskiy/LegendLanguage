@@ -18,23 +18,29 @@ class TestInterp(unittest.TestCase):
         I = Interpreter.interpret(parser)
         self.assertEqual(I, expected)
 
-    # def test_if_statements(self):
-    #     parser = [('IF_STATEMENT', ('GREATER_THAN', ('IDENTIFIER', 'x'), ('NUMBER', '5')), [[('PRINT', [('STRING', 'Hello, world!')])]], [[('PRINT', [('STRING', 'Goodbye, world!')])]])]
-    #     I = Interpreter.interpret(parser)
-    #     print(I)
-    #
-    #     #self.assertEqual(I, expected)
-    #
-    # def test_while_loop(self):
-    #     parser = [('ASSIGNMENT', 'count', ('NUMBER', '5')), ('WHILE_LOOP', ('GREATER_THAN', ('IDENTIFIER', 'count'), ('NUMBER', '0')), [[('PRINT', [('STRING', 'Count:'), ('IDENTIFIER', 'count')]), ('ASSIGNMENT', 'count', ('SUBTRACT', ('IDENTIFIER', 'count'), ('NUMBER', '1')))]])]
-    #     I = Interpreter.interpret(parser)
-    #     expected = """
-    #     count = 5.0
-    #     while count > 0.0:
-    #         print('Count:', count)
-    #         count = count - 1.0 """
-    #     print(I)
-    #     self.assertEqual(I, expected)
+    def test_if_statements(self):
+        parser = [('IF_STATEMENT', ('GREATER_THAN', ('IDENTIFIER', 'x'), ('NUMBER', '5')), [[('PRINT', [('STRING', 'Hello, world!')])]], [[('PRINT', [('STRING', 'Goodbye, world!')])]])]
+        expected = """if x > 5.0:
+    print('Hello, world!')
+else:
+    print('Goodbye, world!')\n"""
+
+        I = Interpreter.interpret(parser)
+        print(I)
+
+        #self.assertEqual(I, expected)
+        self.assertEqual(expected, I)
+
+    def test_while_loop(self):
+        parser = [('ASSIGNMENT', 'count', ('NUMBER', '5')), ('WHILE_LOOP', ('GREATER_THAN', ('IDENTIFIER', 'count'), ('NUMBER', '0')), [[('PRINT', [('STRING', 'Count:'), ('IDENTIFIER', 'count')]), ('ASSIGNMENT', 'count', ('SUBTRACT', ('IDENTIFIER', 'count'), ('NUMBER', '1')))]])]
+        I = Interpreter.interpret(parser)
+        expected = """count = 5.0
+while count > 0.0:
+    print('Count:', count)
+    count = count - 1.0
+"""
+        print(I)
+        self.assertEqual(I, expected)
 
     # def test_if_statements(self):
     # def test_built_in_functions(self):
