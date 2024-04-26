@@ -2,7 +2,7 @@ import math
 
 
 class Interpreter:
-    @staticmethod
+
     def interpret(parsed_statements):
         python_code = ""
 
@@ -37,10 +37,10 @@ class Interpreter:
                 python_code += ")\n"
 
         return python_code
-    @staticmethod
+
     def execute_python_code(python_code):
         exec(python_code)
-    @staticmethod
+
     def _interpret_expression(expression):
         if expression[0] == 'NUMBER' or expression[0] == 'STRING':
             if expression[0] == 'STRING':
@@ -154,7 +154,7 @@ class Interpreter:
             values = [Interpreter._interpret_expression(arg) for arg in arguments]
             return values[0] * values[1]
 
-    @staticmethod
+
     def _interpret_block(block):
         python_code = ""
         for statement in block:
