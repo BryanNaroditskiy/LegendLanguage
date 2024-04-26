@@ -9,17 +9,19 @@ class TestLex(unittest.TestCase):
         """
 
         expected_tokens = [('NEWLINE', '\n'), ('INDENT', 12), ('IDENTIFIER', 'x'), ('EQUALS', '='), ('NUMBER', '5'), ('NEWLINE', '\n'), ('DEDENT', 12), ('NEWLINE', '\n')]
-        print(lex(code))
+
         self.assertEqual(lex(code), expected_tokens)
 
     def test_if_statements(self):
         code = """
             if x > 5:
-                print("Hello, world!")
-            else:
-                print("Goodbye, world!")
+                print|"Hello, world!"|
+                
+            else: 
+                print|"Goodbye, world!"|
         """
-        expected_tokens = [('NEWLINE', '\n'), ('INDENT', 12), ('KEYWORD', 'if'), ('IDENTIFIER', 'x'), ('GREATER_THAN', '>'), ('NUMBER', '5'), ('COLON', ':'), ('NEWLINE', '\n'), ('INDENT', 16), ('PRINT', 'print'), ('LEFT_PAREN', '('), ('STRING', 'Hello, world!'), ('RIGHT_PAREN', ')'), ('NEWLINE', '\n'), ('DEDENT', 16), ('KEYWORD', 'else'), ('COLON', ':'), ('NEWLINE', '\n'), ('INDENT', 16), ('PRINT', 'print'), ('LEFT_PAREN', '('), ('STRING', 'Goodbye, world!'), ('RIGHT_PAREN', ')'), ('NEWLINE', '\n'), ('DEDENT', 16), ('DEDENT', 12), ('NEWLINE', '\n')]
+        expected_tokens = [('NEWLINE', '\n'), ('INDENT', 12), ('KEYWORD', 'if'), ('IDENTIFIER', 'x'), ('GREATER_THAN', '>'), ('NUMBER', '5'), ('COLON', ':'), ('NEWLINE', '\n'), ('INDENT', 16), ('PRINT', 'print'), ('PIPE', '|'), ('STRING', 'Hello, world!'), ('PIPE', '|'), ('NEWLINE', '\n'), ('NEWLINE', '\n'), ('DEDENT', 16), ('KEYWORD', 'else'), ('COLON', ':'), ('NEWLINE', '\n'), ('INDENT', 16), ('PRINT', 'print'), ('PIPE', '|'), ('STRING', 'Goodbye, world!'), ('PIPE', '|'), ('NEWLINE', '\n'), ('DEDENT', 16), ('DEDENT', 12), ('NEWLINE', '\n')]
+
 
         self.assertEqual(lex(code), expected_tokens)
 
@@ -41,9 +43,10 @@ class TestLex(unittest.TestCase):
         self.assertEqual(lex(code), expected_tokens)
 
         code = """ 
-             kinetic_energy | 2, 4 |
+             x = kinetic_energy| 2, 4 |
         """
-        expected_tokens = [('INDENT', 1), ('NEWLINE', '\n'), ('INDENT', 13), ('KINETIC_ENERGY', 'kinetic_energy'), ('PIPE', '|'), ('NUMBER', '2'), ('NUMBER', '4'), ('PIPE', '|'), ('NEWLINE', '\n'), ('DEDENT', 13), ('DEDENT', 9), ('INDENT', 8), ('NEWLINE', '\n')]
+        expected_tokens = [('INDENT', 1), ('NEWLINE', '\n'), ('INDENT', 13), ('IDENTIFIER', 'x'), ('EQUALS', '='), ('KINETIC_ENERGY', 'kinetic_energy'), ('PIPE', '|'), ('NUMBER', '2'), ('NUMBER', '4'), ('PIPE', '|'), ('NEWLINE', '\n'), ('DEDENT', 13), ('DEDENT', 9), ('INDENT', 8), ('NEWLINE', '\n')]
+
         self.assertEqual(lex(code), expected_tokens)
 
     def test_while_loop(self):
